@@ -60,7 +60,7 @@ def home():
 def post():
     with create_connection() as connection:
         with connection.cursor() as cursor:
-            sql = "SELECT * FROM post where id = %s"
+            sql = "SELECT * FROM post WHERE id = %s"
             values = (request.args["id"])
             cursor.execute(sql,values)
             result = cursor.fetchone()
@@ -71,7 +71,7 @@ def add_post():
     if request.method == "POST":
         with create_connection() as connection:
             with connection.cursor() as cursor:
-                sql = "insert into posts (content) VALUES (%s)"
+                sql = "insert into post (content) VALUES (%s)"
                 values= (request.form["content"])
                 cursor.execute(sql,values)
                 connection.commit()

@@ -55,7 +55,7 @@ def home():
             cursor.execute(sql)
             result = cursor.fetchall()
     return render_template("home.html", result=result)
-
+            
 @app.route("/post")
 def post():
     with create_connection() as connection:
@@ -68,16 +68,73 @@ def post():
             result = cursor.fetchone()
     return render_template("post_view.html", result=result)
 
+@app.route("/editpost", methods=["GET", "POST"])
+def editpost():
+    if not can_access(id):
+        flash("No permission si gagu")
+        return redirect("/")
+    
+    
+    if request.method == "POST":
+        with create_connection() as connection:
+            with connection.cursor() as cursor:
+                
+                    image = request.files["image"]
+
+                    if image:
+                        # Choose a random filename to prevent clashes
+                        ext = os.path.splitext(image.filename)[1]
+                        image_path = "static/images/" + str(uuid.uuid4())[:8] + ext
+                        image.save(image_path)
+                    else:
+                        image_path = None
+                
+                    sql = """UPDATE post SET
+                        content = %s,
+                        image = %s
+                        WHERE id = %s"""
+                    values= (
+                        request.form["content"],
+                        image_path,
+                        request.args["id"]
+                    )
+                    cursor.execute(sql, values)
+                    connection.commit()
+            return redirect("/allpost")
+        
+    else:
+        with create_connection() as connection:
+            with connection.cursor() as cursor:
+                sql = "SELECT content FROM post WHERE id = %s"
+                values = (request.args["id"])
+                cursor.execute(sql, values)
+                result = cursor.fetchone()
+        return render_template("post_edit.html", result=result)
+
+
+
 @app.route("/post/add", methods=["GET", "POST"])
 def add_post():
     if request.method == "POST":
         if "logged_in" in session:
             with create_connection() as connection:
                 with connection.cursor() as cursor:
-                    sql = "insert into post (content, id) VALUES (%s, %s)"
+                
+                    image = request.files["image"]
+
+                    if image:
+                        ext = os.path.splitext(image.filename)[1]
+                        image_path = "static/images" + str(uuid.uuid4())[:8] + ext
+                        image.save(image_path)
+                    else:
+                        image_path = None
+                    
+                    sql = """INSERT INTO post (content, user_id, image, dateposted) VALUES (%s, %s, %s, %s)"""
                     values= (
                         request.form["content"],
-                        session["id"]
+                        session["id"],
+                        image_path,
+                        request.form["dateposted"]
                     )
                     cursor.execute(sql,values)
                     connection.commit()
@@ -86,6 +143,42 @@ def add_post():
             flash ("Log in first")
     else:
         return render_template("post_add.html")
+    
+@app.route("/allpost")
+def allpost():
+    with create_connection() as connection:
+        with connection.cursor() as cursor:
+            sql = """SELECT * FROM post
+                LEFT JOIN user ON post.user_id = user.id"""
+            cursor.execute(sql)
+            result = cursor.fetchall()
+    return render_template("post_all.html", result=result)
+
+
+@app.route("/deletepost")
+def deletepost():
+    if not can_access(id):
+        flash("No permission ka gaga")
+        return redirect("/")
+    
+    with create_connection() as connection:
+        with connection.cursor() as cursor:
+            # Get the imafe path before deleting the user
+            sql = "SELECT image FROM post WHERE id = %s"
+            values  = (request.args["id"])
+            cursor.execute(sql, values)
+            result = cursor.fetchone()
+            if result["image"]:
+                os.remove(result["image"])
+
+
+
+
+            sql = "DELETE FROM post WHERE id = %s"
+            values = (request.args["id"])
+            cursor.execute(sql, values)
+            connection.commit()
+    return redirect("/allpost")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -130,7 +223,7 @@ def signup():
                 if image:
                     # Choose a random filename to prevent clashes
                     ext = os.path.splitext(image.filename)[1]
-                    image_path = "static/images/" + str(uuid.uuid4())[:8] + ext
+                    image_path = "static/images/profile" + str(uuid.uuid4())[:8] + ext
                     image.save(image_path)
                 else:
                     image_path = None

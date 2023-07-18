@@ -1,0 +1,17 @@
+{% extends "_layout.html" %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data">
+    <input name="id" type="hidden" value="{{ result['id'] }}">
+    <input name="old_image" type="hidden" value="{{ result['image'] or ''}}">
+
+    <label>Edit content</label>
+    <br>
+    <textarea name="content">{{ result ["content"]}}</textarea>
+    <br>
+    <input type="file" name="image">
+    <br>
+    <button>Submit</button>
+</form>
+
+{% endblock %}

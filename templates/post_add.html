@@ -1,9 +1,13 @@
 {% extends "_layout.html" %}
 
 {% block content %}
-<form method="post">
+<form method="POST" enctype="multipart/form-data">
     <label>Post content</label>
     <textarea name="content"></textarea>
+    <br>
+    <input type="file" name="image">
+    <br>
+    
     <button>Submit</button>
 </form>
 

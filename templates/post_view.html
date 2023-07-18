@@ -4,4 +4,10 @@
         <h2>Post by {{ result["first_name"] }}{{ result["last_name"] }}</h2>
     {{ result["content"] }}
 
+    <br>
+
+    <img src="{{ result['image'] }}" alt="post" height="600">
+    
+    <a href="/delete?id={{ result['id'] }}" onclick="return confirm('Are you sure?')">Delete</a>
+    <a href="/editpost?id={{ result['id'] }}">Edit</a>
 {% endblock %}

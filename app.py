@@ -24,6 +24,7 @@ def can_access(id):
         return matching_id or is_admin
     else:
         return False
+    
 
 def encrypt(password):
     return hashlib.sha256(password.encode()).hexdigest()
@@ -70,11 +71,6 @@ def post():
 
 @app.route("/editpost", methods=["GET", "POST"])
 def editpost():
-    if not can_access(id):
-        flash("No permission si gagu")
-        return redirect("/")
-    
-    
     if request.method == "POST":
         with create_connection() as connection:
             with connection.cursor() as cursor:
@@ -129,16 +125,15 @@ def add_post():
                     else:
                         image_path = None
                     
-                    sql = """INSERT INTO post (content, user_id, image, dateposted) VALUES (%s, %s, %s, %s)"""
+                    sql = """INSERT INTO post (content, user_id, image) VALUES (%s, %s, %s)"""
                     values= (
                         request.form["content"],
                         session["id"],
                         image_path,
-                        request.form["dateposted"]
                     )
                     cursor.execute(sql,values)
                     connection.commit()
-            return render_template("post_add.html")
+            return redirect("/allpost")
         else:
             flash ("Log in first")
     else:
@@ -179,6 +174,20 @@ def deletepost():
             cursor.execute(sql, values)
             connection.commit()
     return redirect("/allpost")
+
+@app.route("/like")
+def like():
+    with create_connection() as connection:
+        with connection.cursor() as cursor:
+            sql = "UPDATE post SET likes = likes + 1 WHERE id  = %s"
+            values = (request.args["id"])
+            cursor.execute(sql, values)
+            connection.commit()
+    return redirect("/allpost")
+            
+            
+
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():

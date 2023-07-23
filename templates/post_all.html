@@ -4,16 +4,19 @@
 {% for row in result %}
     <tr>
         <td>
-            <img src="{{ row['image'] or 'static/images/default_image.jpg' }}" alt="profile" height="32">
             {{ row["first_name"] }} {{ row["last_name"]}}
             <br>
+            <p>posted on {{ row["date_created"] }}</p>
             {{ row["content"]}}
             <br>
             <img src="{{ row['image'] }}" alt="post" height="600">
             <br>
+            <a href="/like?id={{ row['id'] }}">{{ row['likes']}} likes</a>
+            <br>
             <a href="/post?id={{ row['id'] }}">View</a>
             <a href="/editpost?id={{ row['id'] }}">Edit</a>
             <a href="/deletepost?id={{ row['id'] }}" onclick="return confirm ('Are you sure?')">Delete</a>
+            <br>
         </td>
     </tr>
 {% endfor %}

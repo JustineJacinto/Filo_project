@@ -1,13 +1,29 @@
 {% extends "_layout.html" %}
 {% block content %}
+<div class="viewcontainer">
+    <div class="view">
 
-        <h2>Post by {{ result["first_name"] }}{{ result["last_name"] }}</h2>
-    {{ result["content"] }}
-
-    <br>
-
-    <img src="{{ result['image'] }}" alt="post" height="600">
-    
-    <a href="/delete?id={{ result['id'] }}" onclick="return confirm('Are you sure?')">Delete</a>
-    <a href="/editpost?id={{ result['id'] }}">Edit</a>
+        <div class="name_profileimage">
+            <div class="profileimage">
+                <img src="{{ result['user.image'] or 'static/images/default_image.jpg' }}" alt="profile" height="64">
+            </div>
+            <div class="postusername">
+                <a href="/view?id={{result['user_id'] }}">Posted by {{ result["first_name"] }}{{ result["last_name"] }}</a>
+            </div>
+        </div>
+        <br>
+        <p>posted on {{ result["date_created"] }}</p>
+        <br>
+        {{ result["content"]|safe }}
+        <br>
+            <img src="{{ result['image'] }}" alt="post" height="600">
+        <br>
+        <div class="view_but">
+            <a href="/like?id={{ result['id'] }}"> {{ result['count(likes.post_id)']}} likes </a>
+            <a href="/post/comment?id={{ result['id'] }}">Comments</a>
+            <a href="/post/delete?id={{ result['id'] }}" onclick="return confirm('Are you sure?')">Delete</a>
+            <a href="/post/edit?id={{ result['id'] }}">Edit</a>
+        </div>
+    </div>
+</div>
 {% endblock %}

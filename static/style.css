@@ -1,3 +1,12 @@
+body {
+    background-color: antiquewhite;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body, html {
+    height: 100%;
+}
+
 table{
     /*Makes the borders touch each other*/
     border-collapse: collapse;
@@ -15,18 +24,190 @@ td {
     text-align: left;
 }
 /* :nth-child selects only the elements matching the equation */
-tr:nth-child(2n) {
-    background-color: rgb(248, 186, 179);
+
+.nav_container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-content: stretch;
 }
-col:nth-child(2n + 1) {
-    background-color: rgb(233, 231, 232);
-}
+
 nav {
-    background-color: pink;
-    padding: 10px;
-    text-align: right;
+    background-color: #E60026;
+    padding: 15px;
+    height: 45px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-left: 30px;
+
+
 }
-nav a {
+
+.nav_image a, .nav_image img {
+    height: 60px;
+    width: 120px;
+}
+
+
+.nav_but a {
+    display: inline-block;
+    background-color: cornsilk;
+    margin: 2px;
+    padding: 8px 12px;
+    color: black;
+    text-decoration: none;
+    border-radius: 2px;
+    transition-property: background-color, transform;
+    transition-duration: 300ms;
+    justify-content: center;
+}
+.nav_but a:hover{
+    background-color:darksalmon;
+    transform: translateY(-3px);
+}
+
+.home_container {
+    background-color: antiquewhite;
+    border: 0px solid;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 90%;
+
+}
+.home_container table {
+    background-color: rgb(245, 236, 158);
+}
+
+.home_container tr:nth-child(even){background-color: #e0da7d;}
+
+.viewcontainer {
+    padding: 10px;
+
+}
+
+.view_but a {
+    background-color: cornsilk;
+    margin: 2px;
+    padding: 8px 12px;
+    color: black;
+    text-decoration: none;
+    border-radius: 5px;
+    transition-property: background-color, transform;
+    transition-duration: 300ms;
+    justify-content: center;
+}
+
+.view_but a:hover {
+    background-color:darksalmon;
+    transform: translateY(-3px);
+}
+
+
+.view a{
+    display: inline-block;
+    margin: 2px;
+    color: #000000;
+    text-decoration: none;
+}
+
+.post_image_comment img {
+    width: 95%;
+}
+
+.message {
+    background-color: rgb(216, 214, 68);
+    padding: 15px;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0%;
+}
+
+img[alt=profile] {
+    border-radius: 50%;
+    aspect-ratio: 1 /1; /* Makes width and height the same*/
+    object-fit: cover; /* Crops instead of squashing */
+
+}
+
+.center img[alt=post] {
+    aspect-ratio: 6/4;
+    object-fit: cover;
+}
+
+.postimage {
+    justify-content: center;
+}
+
+table.center {
+    border-collapse: separate;
+}
+
+table.view_center{
+    border-collapse: separate;
+}
+.view_center th, .view_center td{
+    justify-content: center;
+    padding: 5px;
+    text-align: left;
+    border-bottom: 1px solid #000000;
+    border-left: 0px;
+    border-right: 0px;
+    border-radius: 10px;
+    background-color: rgb(0, 217, 255);
+    border-radius: 10px;
+}
+
+.view_center img {
+    width: 100%;
+    aspect-ratio: 6/4;
+    object-fit: cover;
+    border-radius: 10px;
+    opacity: 0.5;
+}
+
+.view_center img:hover {
+    opacity: 1;
+}
+
+.center th, .center td {
+    padding: 18px;
+    text-align: left;
+    border-bottom: 1px solid #000000;
+    border-left: 0px;
+    border-right: 0px;
+    border-radius: 10px;
+    background-color: rgb(0, 217, 255);
+}
+
+.center a {
+    text-decoration: none;
+    color: #000000;
+}
+
+.name_profileimage {
+    display: flex;
+    align-items: center;
+}
+
+.posttable {
+    background-color: antiquewhite;
+    border: 0px solid;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.postbuttons {
+    background-color: #FFF880;
+    padding: 12px 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.postbuttons a {
     display: inline-block;
     background-color: cornsilk;
     margin: 2px;
@@ -37,29 +218,133 @@ nav a {
     transition-property: background-color, transform;
     transition-duration: 300ms;
 }
-nav a:hover{
+
+
+.postbuttons a:hover {
     background-color:darksalmon;
     transform: translateY(-3px);
 }
 
-.message {
-    background-color: pink;
+.postusername {
+    font-size: x-large;
+    text-decoration: none;
+    display: inline-block;
+    color: black;
+
+}
+
+.viewcontainer {
+    display: flex;
+}
+
+.comment_view_post {
+    width: 50%;
+}
+
+.commentcontainer {
+    display: flex;
     padding: 15px;
+    justify-content: center;
+}
+
+.comment_area {
     width: 25%;
+}
+.comments {
+    padding-top: 50px;
+}
+
+.commentss {
+    width: 50%;
+}
+
+.commentview {
+    width: 60%;
+}
+
+.postimage {
+    width: 50%;
+}
+
+.comments_table {
+    width: 50%;
+    border-bottom: #000000, 1px;
+
+}
+
+.login {
+    display: flex;
+    justify-content: flex-start;
+    align-items: stretch;
+    min-height: 70vh;
+    background-image:url(/static/images/96f96bef.jpg);
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+}
+
+
+.login_form {
+    background-color: rgb(43, 159, 194);
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    align-items: center;
+    justify-content: center;
+    width: 30%;
+    box-shadow:20px 20px 25px 10px rgb(8, 3, 4);
+}
+
+.login_form input {
+    height: 50px;
+    width: 100%;
     text-align: center;
+    border-radius: 10px;
 }
 
-img[alt=profile] {
-    border-radius: 50%;
-    aspect-ratio: 1 /1; /* Makes width and height the same*/
-    object-fit: cover; /* Crops instead of squashing */
-
+.login_form input:focus {
+    border: 3px solid #fae790;
 }
 
-.center {
-    margin-left: auto;
-    margin-right: auto;
+.login_form form {
+    align-content: center;
+    justify-content: center;
+    width: 75%;
 }
 
+.login_button button {
+    display: inline-block;
+    background-color: cornsilk;
+    margin: 1px;
+    padding: 6px 10px;
+    color: black;
+    text-decoration: none;
+    border-radius: 2px;
+    transition-property: background-color, transform;
+    transition-duration: 300ms;
+    border: 0px;
+    width: 100%;
+    height: 50px;
+    border-radius: 10px;
+}
 
+.login_button button:hover {
+    background-color:rgb(240, 208, 102);
+    transform: translateY(-3px);
+}
 
+.login_image {
+    display: flex;
+    align-items: stretch;
+    width: 60%;
+}
+
+.viewwholeuser {
+    padding: 20px
+}
+
+.postinventory {
+    justify-content: center;
+}

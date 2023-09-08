@@ -1,0 +1,19 @@
+{% extends "_layout.html" %}
+
+{% block content %}
+
+{% if "content" in result %}
+    <form method="post" enctype="multipart/form-data">
+        <input name="id" type="hidden" value="{{ result['id'] }}">
+        <input name="old_image" type="hidden" value="{{ result['image'] or ''}}">
+
+        <label>Edit content</label>
+        <br>
+        <textarea id="editor" name="content">{{ result ["content"]}}</textarea>
+        <br>
+        <button>Submit</button>
+    </form>
+{% endif %}
+
+
+{% endblock %}

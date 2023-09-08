@@ -1,18 +1,26 @@
 {% extends "_layout.html" %}
 
 {% block content %}
-
-<form method="POST">
-    <label>Email</label>
-    <input name="email" type="email">
-    <br>
-    <label>Password</label>
-    <input id="password" name="password" type="password">
-    <button id="show-password" type="button">Show</button>
-    <br>
-    <button>Login</button>
-</form>
-
+<div class="login">
+    <div class="login_form">
+        <div class="logo_login">
+            <image src=static/images/logo.png>
+        </div>
+        <form method="POST">
+            <div class="emailform">
+                <input name="email" type="email" placeholder="Email">
+            </div>
+            <br>
+            <div class="passwordform">
+                <input id="password" name="password" type="password" placeholder="Password">
+            </div>
+            <br>
+            <div class="login_button">
+                <button>Login</button>
+            </div>
+        </form>
+    </div>
+</div>
 <script>
 let password = document.querySelector('#password');
 let showButton = document.querySelector('#show-password');

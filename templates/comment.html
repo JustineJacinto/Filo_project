@@ -1,0 +1,67 @@
+{% extends "_layout.html" %}
+{% block content %}
+<div class="commentcontainer">
+    <div class="commentview">
+        <div class="userview">
+            <div class="name_profileimage">
+                <div class="profileimage">
+                    <img src="/{{ result[0]['u1.image'] }}" alt="profile" height="64">
+                </div>
+                <h1>{{ result[0]['first_name'] }} {{ result[0]['last_name'] }}</h1>
+            </div>
+        </div>
+        <p>posted on {{ result[0]["date_created"] }}</p>
+        <br>
+        {{ result[0]["content"]|safe }}
+        <div class="post_image_comment">
+            <a href="/{{ result[0]['image'] }}"><img src="/{{ result[0]['image'] }}" alt="post" ></a>
+        </div>
+    </div>
+
+    <div class="comment_area">
+        <div class="comments">
+            <form method="POST" class="commentss">
+                <textarea name="content"></textarea>
+                <br>
+                <button>Submit</button>
+            </form>
+        </div>
+        {% if "content" in result == "" %}
+            <tr>
+                <td>
+                    <p>There is no comment yet</p> 
+                </td>
+            </tr>
+
+            
+        {% else %}
+            <tableclass="comments_table">
+                {% for row in result %}
+                    <tr>
+                        <td>
+                            <div class="name_profileimage">
+                                <div class="profileimage">
+                                    <img src="/{{ row['u2.image'] }}" alt="profile" height="64">
+                                </div>
+                                <div class="postusername">
+                                    {{ row["u2.first_name"] }} {{ row["u2.last_name"]}}</a>
+                                </div>
+                            </div>
+                            <br>
+                            <p>posted on {{ row["p2.date_created"] }}</p>
+                            {{ row["p2.content"]|safe}}
+                            <br>
+                            <br>
+                            <a href="/post/commentedit?id={{ row['id'] }}">Edit</a>
+                            <a href="/post/delete?id={{ row['id'] }}" onclick="return confirm ('Are you sure?')">Delete</a>
+                            <br>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+
+</div>
+
+{% endblock %}

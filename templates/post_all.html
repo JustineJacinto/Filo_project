@@ -1,25 +1,47 @@
 {% extends "_layout.html" %}
 {% block content %}
-<table class="center">
-{% for row in result %}
-    <tr>
-        <td>
-            {{ row["first_name"] }} {{ row["last_name"]}}
-            <br>
-            <p>posted on {{ row["date_created"] }}</p>
-            {{ row["content"]}}
-            <br>
-            <img src="{{ row['image'] }}" alt="post" height="600">
-            <br>
-            <a href="/like?id={{ row['id'] }}">{{ row['likes']}} likes</a>
-            <br>
-            <a href="/post?id={{ row['id'] }}">View</a>
-            <a href="/editpost?id={{ row['id'] }}">Edit</a>
-            <a href="/deletepost?id={{ row['id'] }}" onclick="return confirm ('Are you sure?')">Delete</a>
-            <br>
-        </td>
-    </tr>
-{% endfor %}
-</table>
+
+<div class="posttable">
+
+    <div class="postbuttons">
+        <a href="/post/add">Add post</a>
+        <a href="/">People</a>
+    </div>
+
+    <table class="center">
+        {% for row in result %}
+            <tr>
+                <td>
+                    <div class="name_profileimage">
+                        <div class="profileimage">
+                            <img src="{{ row['user.image'] or 'static/images/default_image.jpg' }}" alt="profile" height="64">
+                        </div>
+                        <div class="postusername">
+                            <a href="/view?id={{ row['user_id'] }}"> {{ row["first_name"] }} {{ row["last_name"]}}</a>
+                        </div>
+                    </div>
+                    <br
+                    <p> posted on {{ row["date_created"] }}</p>
+                    {{ row["content"]|safe}}
+                    <br>
+                    <div class="postimage">
+                        <a href="{{ row['image'] }}"><img src="{{ row['image'] }}" alt="post" height="600px"></a>
+                    </div>
+                    <br>
+                    <div class="view_but">
+                        <a href="/like?id={{ row['id'] }}">{{ row['count(likes.post_id)']}} likes</a>
+                        <a href="/post/comment?id={{ row['id'] }}">Comments</a>
+                        <a href="/post?id={{ row['id'] }}">View</a>
+                        <a href="/post/edit?id={{ row['id'] }}">Edit</a>
+                        <a href="/post/delete?id={{ row['id'] }}" onclick="return confirm ('Are you sure?')">Delete</a>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+
+</div>
+
 
 {% endblock %}

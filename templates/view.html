@@ -1,13 +1,34 @@
 {% extends "_layout.html" %}
-
 {% block content %}
 
-<h1>{{ result['first_name']}} {{ result['last_name']}}</h1>
+<div class="viewwholeuser">
+    <div class="userview">
+        <div class="userview">
+            <div class="name_profileimage">
+                <div class="profileimage">
+                    <img src="/{{ result[0]['user.image'] }}" alt="profile" height="64">
+                </div>
+                <h1>{{ result[0]['first_name'] }} {{ result[0]['last_name'] }}</h1>
+            </div>
+        </div>
+        <div class="userbio">
+            <p>Email: <a href="maito:{{ result[0]['email'] }}">{{result[0]['email'] }}</a></p>
+            <p>Birthday: {{ result[0]['birthday'] }}</p>
+        </div>
+    </div>
 
-<img src="{{ result['image'] or 'static/images/default_image.jpg' }}" alt="profile" height="200">
-<p>Email: <a href="maito:{{ result['email'] }}">{{result['email'] }}</a></p>
-
-<p>Birthday: {{ result['birthday'] }}</p>
+    <div class="postinventory">
+        <table class="view_center">
+            {% for row in result %}
+                <tr>
+                    <td>
+                        <a href="/post?id={{ row['id'] }}"><img src="{{ row['image'] }}" alt="post" height="600px"></a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
 
 {% if "logged_in" in session and 
     (session['id'] == result['id'] or session['role'] == 'admin') 

@@ -10,8 +10,11 @@ app.secret_key = "kinnammet"
 def create_connection():
     return pymysql.connect(
         host="10.0.0.17",
+        #host="127.0.0.1",
         user="jusjacinto",
+        #user="root",
         password="ARROW",
+        #password="arrow",
         db="jusjacinto",
         charset="utf8mb4",
         cursorclass=pymysql.cursors.DictCursor
@@ -61,29 +64,74 @@ def home():
 def post():
     with create_connection() as connection:
         with connection.cursor() as cursor:
-            sql = """SELECT * FROM post
-                    LEFT JOIN user ON post.user_id = user.id
-                    WHERE post.id = %s"""
+            sql = """SELECT *, count(likes.post_id) FROM post 
+            LEFT JOIN user ON post.user_id = user.id 
+            LEFT JOIN likes ON post.id = likes.post_id 
+            WHERE post.id = %s GROUP BY (post.id)"""
+            #sql = """SELECT * FROM post 
+            #LEFT JOIN user ON post.user_id = user.id 
+            #LEFT JOIN likes ON post.id = likes.post_id 
+            #WHERE post.id = %s """
             values = (request.args["id"])
             cursor.execute(sql, values)
             result = cursor.fetchone()
     return render_template("post_view.html", result=result)
 
-@app.route("/editpost", methods=["GET", "POST"])
+@app.route("/post/comment",  methods=["GET", "POST"])
+def comment():
+    if "logged_in" in session:
+        if request.method == "POST":
+            with create_connection() as connection:
+                with connection.cursor() as cursor:
+                    
+                        sql = """INSERT INTO post SET
+                            content = %s,
+                            user_id = %s,
+                            main_post_id = %s"""
+                        values= (
+                            request.form["content"],
+                            session['id'],
+                            request.args["id"]
+                        )
+                        cursor.execute(sql, values)
+                        connection.commit()
+                return redirect("/postall")
+        else:
+            with create_connection() as connection:
+                with connection.cursor() as cursor:
+                    sql = """SELECT * FROM post AS p1 
+                        LEFT JOIN user AS u1 ON p1.user_id = u1.id 
+                        LEFT JOIN post AS p2 ON p2.main_post_id = p1.id 
+                        LEFT JOIN user AS u2 ON p2.user_id = u2.id 
+                        WHERE p1.id = %s"""
+                    values = (request.args["id"])
+                    cursor.execute(sql, values)
+                    result = cursor.fetchall()
+            return render_template("comment.html", result=result)
+    else: 
+        flash("Log in to post a comment")
+    return redirect("/login")
+
+@app.route("/post/edit", methods=["GET", "POST"])
 def editpost():
+    if not can_access(id):
+        flash("No permission to edit post")
+        return redirect("/postall")
+    
     if request.method == "POST":
         with create_connection() as connection:
             with connection.cursor() as cursor:
-                
-                    image = request.files["image"]
 
+                    image = request.files["image"]
+                    
                     if image:
-                        # Choose a random filename to prevent clashes
                         ext = os.path.splitext(image.filename)[1]
                         image_path = "static/images/" + str(uuid.uuid4())[:8] + ext
                         image.save(image_path)
+                        if request.form["old_image"]:
+                            os.remove(request.form["old_image"])
                     else:
-                        image_path = None
+                        image_path = request.form["old_image"]
                 
                     sql = """UPDATE post SET
                         content = %s,
@@ -96,7 +144,35 @@ def editpost():
                     )
                     cursor.execute(sql, values)
                     connection.commit()
-            return redirect("/allpost")
+            return redirect("/postall")
+        
+    else:
+        with create_connection() as connection:
+            with connection.cursor() as cursor:
+                sql = "SELECT content,image FROM post WHERE id = %s"
+                values = (request.args["id"])
+                cursor.execute(sql, values)
+                result = cursor.fetchone()
+        return render_template("post_edit.html", result=result)
+
+@app.route("/post/commentedit", methods=["GET", "POST"])
+def editcomment():
+    if request.method == "POST":
+        with create_connection() as connection:
+            with connection.cursor() as cursor:
+
+                    image = request.files["image"]
+
+                    sql = """UPDATE post SET
+                        content = %s
+                        WHERE id = %s"""
+                    values= (
+                        request.form["content"],
+                        request.args["id"]
+                    )
+                    cursor.execute(sql, values)
+                    connection.commit()
+            return redirect("/postall")
         
     else:
         with create_connection() as connection:
@@ -105,8 +181,7 @@ def editpost():
                 values = (request.args["id"])
                 cursor.execute(sql, values)
                 result = cursor.fetchone()
-        return render_template("post_edit.html", result=result)
-
+        return render_template("comment_edit.html", result=result)
 
 
 @app.route("/post/add", methods=["GET", "POST"])
@@ -120,7 +195,7 @@ def add_post():
 
                     if image:
                         ext = os.path.splitext(image.filename)[1]
-                        image_path = "static/images" + str(uuid.uuid4())[:8] + ext
+                        image_path = "static/images/" + str(uuid.uuid4())[:8] + ext
                         image.save(image_path)
                     else:
                         image_path = None
@@ -133,32 +208,34 @@ def add_post():
                     )
                     cursor.execute(sql,values)
                     connection.commit()
-            return redirect("/allpost")
+            return redirect("/postall")
         else:
             flash ("Log in first")
-    else:
+    else:                                                                                                                                                                                                                                                                                                                                       
         return render_template("post_add.html")
     
-@app.route("/allpost")
+@app.route("/postall")
 def allpost():
     with create_connection() as connection:
         with connection.cursor() as cursor:
-            sql = """SELECT * FROM post
-                LEFT JOIN user ON post.user_id = user.id"""
+            sql = """SELECT *, count(likes.post_id) FROM post 
+            LEFT JOIN user ON user.id = post.user_id 
+            LEFT JOIN likes ON post.id = likes.post_id WHERE post.main_post_id IS NULL GROUP BY (post.id);"""
+            #sql = """SELECT * FROM post 
+            #LEFT JOIN user ON user.id = post.user_id 
+            #WHERE post.main_post_id IS NULL;"""
             cursor.execute(sql)
             result = cursor.fetchall()
     return render_template("post_all.html", result=result)
 
-
-@app.route("/deletepost")
+@app.route("/post/delete")
 def deletepost():
     if not can_access(id):
-        flash("No permission ka gaga")
-        return redirect("/")
+        flash("No permission to delete post")
+        return redirect("/postall")
     
     with create_connection() as connection:
         with connection.cursor() as cursor:
-            # Get the imafe path before deleting the user
             sql = "SELECT image FROM post WHERE id = %s"
             values  = (request.args["id"])
             cursor.execute(sql, values)
@@ -166,26 +243,26 @@ def deletepost():
             if result["image"]:
                 os.remove(result["image"])
 
-
-
-
             sql = "DELETE FROM post WHERE id = %s"
             values = (request.args["id"])
             cursor.execute(sql, values)
             connection.commit()
-    return redirect("/allpost")
+    return redirect("/postall")
 
 @app.route("/like")
 def like():
     with create_connection() as connection:
         with connection.cursor() as cursor:
-            sql = "UPDATE post SET likes = likes + 1 WHERE id  = %s"
-            values = (request.args["id"])
+            sql = """INSERT INTO likes (user_id, post_id) VALUES ( %s, %s)"""
+            values = (
+                session["id"],
+                request.args["id"]
+            )
             cursor.execute(sql, values)
             connection.commit()
-    return redirect("/allpost")
-            
-            
+    return redirect("/postall")
+
+
 
 
 
@@ -208,9 +285,9 @@ def login():
             session["id"] = result["id"]
             session["first_name"] = result["first_name"]
             session["role"] = result["role"]
-            return redirect("/")
+            return redirect("/postall")
         else:
-            flash ("Adik ka Ba? Mali password amp")
+            flash ("Password incorrect")
     return render_template("login.html")
 
 @app.route("/logout")
@@ -270,17 +347,19 @@ def signup():
 def view():
     with create_connection() as connection:
         with connection.cursor() as cursor:
-            sql = "SELECT * FROM user WHERE id = %s"
+            sql = """SELECT * FROM jusjacinto.post 
+            LEFT JOIN user ON post.user_id = user.id 
+            WHERE user.id = %s AND main_post_id IS NULL;"""
             values = (request.args["id"])
             cursor.execute(sql, values)
-            result = cursor.fetchone()
+            result = cursor.fetchall()
     return render_template("view.html", result=result)
 
 
 @app.route("/update", methods=["GET", "POST"])
 def update():
     if not can_access(id):
-        flash("No permission si gagu")
+        flash("No permission to update user")
         return redirect("/")
     
     if request.method == "POST":
@@ -338,7 +417,7 @@ def update():
 @app.route("/delete")
 def delete():
     if not can_access(id):
-        flash("No permission ka gaga")
+        flash("No permission to delete user")
         return redirect("/")
     
     with create_connection() as connection:
